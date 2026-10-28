@@ -39,7 +39,7 @@ def continuous_discount_factor(
     rates = np.asarray([rate(float(u)) for u in grid], dtype=float)
     if not np.all(np.isfinite(rates)):
         raise ValueError("Rate function returned non-finite values.")
-    return float(np.exp(-np.trapezoid(rates, grid)))
+    return float(np.exp(-np.trapz(rates, grid)))
 
 
 def continuous_bond_price(
@@ -68,7 +68,7 @@ def continuous_bond_price(
     if not np.all(np.isfinite(coupons)):
         raise ValueError("coupon_flow returned non-finite values.")
     discounts = _discount_grid(t, grid, rate)
-    return float(np.trapezoid(coupons * discounts, grid) + terminal_payment * discounts[-1])
+    return float(np.trapz(coupons * discounts, grid) + terminal_payment * discounts[-1])
 
 
 def continuous_duration(
@@ -91,11 +91,11 @@ def continuous_duration(
     if not np.all(np.isfinite(coupons)):
         raise ValueError("coupon_flow returned non-finite values.")
     discounts = _discount_grid(t, grid, rate)
-    price = float(np.trapezoid(coupons * discounts, grid) + terminal_payment * discounts[-1])
+    price = float(np.trapz(coupons * discounts, grid) + terminal_payment * discounts[-1])
     if not np.isfinite(price) or price <= 0:
         raise ValueError("Duration requires a finite, strictly positive price.")
     weighted_pv = float(
-        np.trapezoid((grid - t) * coupons * discounts, grid)
+        np.trapz((grid - t) * coupons * discounts, grid)
         + (maturity - t) * terminal_payment * discounts[-1]
     )
     return weighted_pv / price
